@@ -11,39 +11,34 @@ import re
 from bs4 import BeautifulSoup
 
 def embed_youtube_and_drive_links(content):
-    # Convert Markdown to HTML
     soup = BeautifulSoup(content, 'html.parser')
     
-    # Find all anchor tags in the HTML
     for a_tag in soup.find_all('a', href=True):
+        # Skip if an iframe already exists before the anchor tag
+        if a_tag.find_previous_sibling('iframe'):
+            continue
         url = a_tag['href']
-        
-        # Check if the link is a YouTube URL
         if 'youtube.com/watch' in url:
             video_id = re.search(r"v=([a-zA-Z0-9_-]+)", url)
             if video_id:
-                iframe = f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id.group(1)}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
-                a_tag.insert_before(BeautifulSoup(iframe, 'html.parser'))  # Insert iframe above the link
-                a_tag.insert_before(BeautifulSoup('<br>', 'html.parser'))  # Insert <br> after iframe
+                iframe = f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id.group(1)}" frameborder="0" allowfullscreen></iframe>'
+                a_tag.insert_before(BeautifulSoup(iframe, 'html.parser'))
         
-        # Check if the link is a Google Drive URL
+        elif 'youtu.be' in url:
+            video_id = re.search(r"youtu.be/([a-zA-Z0-9_-]+)", url)
+            if video_id:
+                iframe = f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id.group(1)}" frameborder="0" allowfullscreen></iframe>'
+                a_tag.insert_before(BeautifulSoup(iframe, 'html.parser'))
+
+        # Embed Google Drive Links
         elif 'drive.google.com' in url:
             file_id = re.search(r"file/d/([a-zA-Z0-9_-]+)", url)
             if file_id:
                 iframe = f'<iframe src="https://drive.google.com/file/d/{file_id.group(1)}/preview" width="560" height="315" frameborder="0"></iframe>'
-                a_tag.insert_before(BeautifulSoup(iframe, 'html.parser'))  # Insert iframe above the link
-                a_tag.insert_before(BeautifulSoup('<br>', 'html.parser'))  # Insert <br> after iframe
-        
-        # Check if the link is a shortened YouTube URL (youtu.be)
-        elif 'youtu.be' in url:
-            video_id = re.search(r"youtu.be/([a-zA-Z0-9_-]+)", url)
-            if video_id:
-                iframe = f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id.group(1)}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
-                a_tag.insert_before(BeautifulSoup(iframe, 'html.parser'))  # Insert iframe above the link
-                a_tag.insert_before(BeautifulSoup('<br>', 'html.parser'))  # Insert <br> after iframe
-    
-    # Return the modified HTML content
+                a_tag.insert_before(BeautifulSoup(iframe, 'html.parser'))
+
     return str(soup)
+
 
 
 
