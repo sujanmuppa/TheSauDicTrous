@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Definition for {{ word_data[0].word }}{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>Definition for {{ word_data[0].word }}</h1>
+        <a href="/add_word/{{ word_data[0].word }}" class="btn btn-primary">Add Word</a>
+    </div>
+
+    {% for entry in word_data %}
+        <h2>{{ entry.word }}</h2>
+
+        {% if entry.license %}
+            <a href="{{ entry.license.url }}"><p><strong>{{ entry.license.name }}</strong></p></a>
+        {% endif %}
+        <p><strong>Dictorial</strong></p>
+
+        {% if entry.meanings %}
+            {% for meaning in entry.meanings %}
+                {% if meaning.partOfSpeech %}
+                    <p><strong>Part of Speech:</strong> {{ meaning.partOfSpeech }}</p>
+                {% endif %}
+                {% if meaning.definitions %}
+                    <p><strong>Definitions:</strong></p>
+                    <ul>
+                        {% for definition in meaning.definitions %}
+                            {% if definition.definition %}
+                                <li><strong>Definition:</strong> {{ definition.definition }}</li>
+                            {% endif %}
+                            {% if definition.synonyms %}
+                                <li><strong>Synonyms:</strong> {{ definition.synonyms|join(', ') }}</li>
+                            {% endif %}
+                            {% if definition.antonyms %}
+                                <li><strong>Antonyms:</strong> {{ definition.antonyms|join(', ') }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if meaning.synonyms %}
+                    <p><strong>Synonyms:</strong></p>
+                    <ul>
+                        {% for synonym in meaning.synonyms %}
+                            <li><a href="/define/{{ synonym }}">{{ synonym }}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if meaning.antonyms %}
+                    <p><strong>Antonyms:</strong> {{ meaning.antonyms|join(', ') }}</p>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        {% if entry.phonetic %}<p><strong>Phonetic:</strong> {{ entry.phonetic }}</p>{% endif %}
+        {% if entry.phonetics %}
+            <p><strong>Phonetics:</strong></p>
+            <ul>
+                {% for phonetic_entry in entry.phonetics %}
+                    {% if phonetic_entry.text %}
+                        <li><strong>Phonetic Text:</strong> {{ phonetic_entry.text }}</li>
+                    {% endif %}
+                    {% if phonetic_entry.audio %}
+                        <li>
+                            <audio controls>
+                                <source src="{{ phonetic_entry.audio }}" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if entry.origin %}<p><strong>Origin:</strong> {{ entry.origin }}</p>{% endif %}
+        {% if entry.sourceUrls %}
+            <p><strong>Source URLs:</strong></p>
+            <ul>
+                {% for source_url in entry.sourceUrls %}
+                    <li><a href="{{ source_url }}" target="_blank">{{ source_url }}</a></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

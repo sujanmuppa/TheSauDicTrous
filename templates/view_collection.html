@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}View Collection: {{ collection.name }}{% endblock %}
+
+{% block content %}
+    <h1>View Collection: {{ collection.name }}</h1>
+    <br>
+
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ collection.name }}</h5>
+                    <p class="card-text">
+                        <strong>Story:</strong> {{ collection.story }}<br>
+                        <strong>Root:</strong> {{ collection.root }}<br>
+                        <strong>Created At:</strong> {{ collection.created_at }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <br>
+
+    <!-- Display Words in the Collection -->
+    <h2>Words in this Collection</h2>
+    {% if collection.words %}
+        <div class="row">
+            {% for word in collection.words %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><a href="/define/{{ word.word }}">{{ word.word }}</a></h5>
+                            <p class="card-text">
+                                <strong>Definition:</strong> {{ word.definition }}<br>
+                                <strong>Example:</strong>{{ word.example|replace('\n', '<br>')|safe }}<br>
+                                <strong>Root:</strong> {{ word.root }}<br>
+                                <strong>Created At:</strong> {{ word.created_at }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No words in this collection yet.</p>
+    {% endif %}
+{% endblock %}

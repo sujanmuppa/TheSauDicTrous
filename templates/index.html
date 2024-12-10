@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}DicTorial{% endblock %}
+
+{% block navlinks %}
+    <li class="nav-item">
+        <a class="nav-link" href="/add">CATCH 'EM ALL!!</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/add_collection">STACK 'EM ALL!!!</a>
+    </li>
+{% endblock %}
+
+{% block content %}
+    <h1>HELLO</h1>
+    <br>
+    <br>
+    <h1>WORDS M8!</h1>
+    <div class="row">
+        {% for word in words %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="/define/{{ word.word }}">{{ word.word }}</a></h5>
+                        <p class="card-text">
+                            <strong>Definition:</strong> {{ word.definition }}<br>
+                            <strong>Example:</strong>{{ word.example|replace('\n', '<br>')|safe }}<br>
+                            <strong>Root:</strong> {{ word.root }}<br>
+                            <strong>Created At:</strong> {{ word.created_at }}
+                        </p>
+                        <a href="/edit/{{ word.id }}" class="btn btn-primary">Edit</a>
+                        <a href="/delete/{{ word.id }}" class="btn btn-primary">Delete</a>
+                        <br>
+                        <br>
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="collectionDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Add to collection
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="collectionDropdown">
+                                {% for collection in collections %}
+                                    {% if word not in collection.words %}
+                                        <a class="dropdown-item" href="/add_to_collection/{{ word.id }}/{{ collection.id }}">{{ collection.name }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        <br>
+        <br>
+        <br>
+    </div>
+    <h1>Collections m8!!</h1>
+    <div class="row">
+        {% for collection in collections %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="/view_collection/{{ collection.id }}">{{ collection.name }}</a></h5>
+                        <p class="card-text">
+                            <strong>Story:</strong> {{ collection.story }}<br>
+                            <strong>Root:</strong> {{ collection.root }}<br>
+                            <strong>Created At:</strong> {{ collection.created_at }}
+                        </p>
+                        <a href="/edit_collection/{{ collection.id }}" class="btn btn-primary">Edit</a>
+                        <a href="/delete_collection/{{ collection.id }}" class="btn btn-primary">Delete</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

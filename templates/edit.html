@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Word - DicTorial{% endblock %}
+
+{% block content %}
+    <h1>Edit Word - {{ word.word }}</h1>
+    <form method="post" action="{{ url_for('edit', id=word.id) }}">
+        <div class="form-group">
+            <label for="word">Word</label>
+            <input type="text" class="form-control" id="word" name="word" value="{{ word.word }}" required>
+        </div>
+        <div class="form-group">
+            <label for="definition">Definition</label>
+            <textarea class="form-control" id="definition" name="definition" rows="3" required>{{ word.definition }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="example">Example</label>
+            <textarea class="form-control" id="example" name="example" rows="3" required>{{ word.example }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="root">Root</label>
+            <input type="text" class="form-control" id="root" name="root" value="{{ word.root }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+{% endblock %}

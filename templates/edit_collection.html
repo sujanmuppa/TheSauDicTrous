@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Collection: {{ collection.name }}{% endblock %}
+
+{% block content %}
+    <h1>Edit Collection: {{ collection.name }}</h1>
+    <br>
+
+    <form method="post" action="/edit_collection/{{ collection.id }}">
+        <label for="name">Collection Name:</label>
+        <input type="text" id="name" name="name" value="{{ collection.name }}" required>
+        <br>
+        <br>
+        <label for="story">Story: </label>
+        <textarea id="story" name="story" rows="5" cols="50" required>{{ collection.story }}</textarea>
+        <br>
+        <br>
+        <label for="root">Root: </label>
+        <input type="text" id="root" name="root" value="{{ collection.root }}">
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <br>
+    <br>
+
+    <!-- Display Words in the Collection -->
+    <h2>Words in this Collection</h2>
+    {% if collection.words %}
+        <div class="row">
+            {% for word in collection.words %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><a href="/define/{{ word.word }}">{{ word.word }}</a></h5>
+                            <p class="card-text">
+                                <strong>Definition:</strong> {{ word.definition }}<br>
+                                <strong>Example:</strong>{{ word.example|replace('\n', '<br>')|safe }}<br>
+                                <strong>Root:</strong> {{ word.root }}<br>
+                            </p>
+                            <a href="/delete_from_collection/{{ word.id }}/{{ collection.id }}" class="btn btn-primary">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No words in this collection yet.</p>
+    {% endif %}
+{% endblock %}
