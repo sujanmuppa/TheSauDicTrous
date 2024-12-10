@@ -17,7 +17,7 @@ def create_app():
     app.app_context().push()
     with app.app_context():
         db.create_all()
-    app.secret_key = 'your_secret_key_here'
+    app.secret_key = 'helll'
 
 app = create_app()
 
@@ -25,4 +25,3 @@ from application.controllers import *
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0",port=8080,debug=True)
-

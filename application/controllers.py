@@ -6,6 +6,48 @@ import os
 import requests
 from sqlalchemy import desc, func, not_
 from application.models import *
+import markdown
+import re
+from bs4 import BeautifulSoup
+
+def embed_youtube_and_drive_links(content):
+    # Convert Markdown to HTML
+    soup = BeautifulSoup(content, 'html.parser')
+    
+    # Find all anchor tags in the HTML
+    for a_tag in soup.find_all('a', href=True):
+        url = a_tag['href']
+        
+        # Check if the link is a YouTube URL
+        if 'youtube.com/watch' in url:
+            video_id = re.search(r"v=([a-zA-Z0-9_-]+)", url)
+            if video_id:
+                iframe = f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id.group(1)}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+                a_tag.insert_before(BeautifulSoup(iframe, 'html.parser'))  # Insert iframe above the link
+                a_tag.insert_before(BeautifulSoup('<br>', 'html.parser'))  # Insert <br> after iframe
+        
+        # Check if the link is a Google Drive URL
+        elif 'drive.google.com' in url:
+            file_id = re.search(r"file/d/([a-zA-Z0-9_-]+)", url)
+            if file_id:
+                iframe = f'<iframe src="https://drive.google.com/file/d/{file_id.group(1)}/preview" width="560" height="315" frameborder="0"></iframe>'
+                a_tag.insert_before(BeautifulSoup(iframe, 'html.parser'))  # Insert iframe above the link
+                a_tag.insert_before(BeautifulSoup('<br>', 'html.parser'))  # Insert <br> after iframe
+        
+        # Check if the link is a shortened YouTube URL (youtu.be)
+        elif 'youtu.be' in url:
+            video_id = re.search(r"youtu.be/([a-zA-Z0-9_-]+)", url)
+            if video_id:
+                iframe = f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id.group(1)}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+                a_tag.insert_before(BeautifulSoup(iframe, 'html.parser'))  # Insert iframe above the link
+                a_tag.insert_before(BeautifulSoup('<br>', 'html.parser'))  # Insert <br> after iframe
+    
+    # Return the modified HTML content
+    return str(soup)
+
+
+
+
 
 @app.route("/")
 def index():
@@ -146,3 +188,68 @@ def delete_from_collection(word_id,collection_id):
     collection.words.remove(word)
     db.session.commit()
     return redirect(url_for("edit_collection", id=collection_id))
+
+# Route to view all articles with a snippet
+@app.route('/articles')
+def view_articles():
+    articles = Article.query.all()
+    return render_template('view_articles.html', articles=articles)
+
+@app.route('/article/<int:article_id>')
+def view_article(article_id):
+    article = Article.query.get_or_404(article_id)
+    
+    # Convert Markdown to HTML first
+    article.story = markdown.markdown(article.story, extensions=['extra'])
+    
+    # Embed YouTube and Google Drive links as iframes
+    article.story = embed_youtube_and_drive_links(article.story)
+    
+    return render_template('view_article.html', article=article)
+
+@app.route('/add_article', methods=['GET', 'POST'])
+def add_article():
+    if request.method == 'POST':
+        # Extract data from the form
+        title = request.form['title']
+        link = request.form['link']
+        story = request.form['story']  # Markdown content
+        author_name = request.form['author_name']
+        author_email = request.form['author_email']
+        
+        # Save the article in the database (not collection)
+        new_article = Article(
+            title=title,
+            link=link,
+            story=story,
+            author_name=author_name,
+            author_email=author_email
+        )
+        db.session.add(new_article)
+        db.session.commit()
+        
+        # Redirect to the list of articles after adding
+        return redirect(url_for('view_articles'))
+    
+    return render_template('add_code_article.html')
+
+@app.route('/article/edit/<int:article_id>', methods=['GET', 'POST'])
+def edit_article(article_id):
+    article = Article.query.get_or_404(article_id)
+    
+    if request.method == 'POST':
+        # Update the article with the form data
+        article.title = request.form['title']
+        article.link = request.form['link']
+        article.story = request.form['story']
+        article.author_name = request.form['author_name']
+        article.author_email = request.form['author_email']
+        
+        # Commit the changes to the database
+        db.session.commit()
+        
+        # Redirect to the article view page
+        return redirect(url_for('view_article', article_id=article.id))
+    
+    return render_template('edit_code_article.html', article=article)
+

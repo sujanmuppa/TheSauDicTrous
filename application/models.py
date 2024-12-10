@@ -31,3 +31,15 @@ class Word(db.Model):
 
     def __repr__(self):
         return f"Word('{self.word}')"
+
+class Article(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    link = db.Column(db.String(200), nullable=False)
+    story = db.Column(db.Text, nullable=False)  # Markdown content
+    author_name = db.Column(db.String(100), nullable=False)
+    author_email = db.Column(db.String(100), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __repr__(self):
+        return f"Article('{self.title}')"

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}All Articles{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1 class="mb-4">All Articles</h1>
+
+  <!-- Link to Add New Article -->
+  <a href="{{ url_for('add_article') }}" class="btn btn-primary mb-3">Add New Article</a>
+
+  {% for article in articles %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">
+          <a href="{{ url_for('view_article', article_id=article.id) }}">{{ article.title }}</a>
+        </h5>
+        <p class="text-muted">Author: {{ article.author_name }} ({{ article.author_email }})</p>
+      </div>
+    </div>
+  {% else %}
+    <p>No articles found!</p>
+  {% endfor %}
+</div>
+{% endblock %}
