@@ -21,20 +21,20 @@ def embed_youtube_and_drive_links(content):
         if 'youtube.com/watch' in url:
             video_id = re.search(r"v=([a-zA-Z0-9_-]+)", url)
             if video_id:
-                iframe = f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id.group(1)}" frameborder="0" allowfullscreen></iframe>'
+                iframe = f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id.group(1)}" frameborder="0" allowfullscreen></iframe><br>'
                 a_tag.insert_before(BeautifulSoup(iframe, 'html.parser'))
         
         elif 'youtu.be' in url:
             video_id = re.search(r"youtu.be/([a-zA-Z0-9_-]+)", url)
             if video_id:
-                iframe = f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id.group(1)}" frameborder="0" allowfullscreen></iframe>'
+                iframe = f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id.group(1)}" frameborder="0" allowfullscreen></iframe><br>'
                 a_tag.insert_before(BeautifulSoup(iframe, 'html.parser'))
 
         # Embed Google Drive Links
         elif 'drive.google.com' in url:
             file_id = re.search(r"file/d/([a-zA-Z0-9_-]+)", url)
             if file_id:
-                iframe = f'<iframe src="https://drive.google.com/file/d/{file_id.group(1)}/preview" width="560" height="315" frameborder="0"></iframe>'
+                iframe = f'<iframe src="https://drive.google.com/file/d/{file_id.group(1)}/preview" width="560" height="315" frameborder="0"></iframe><br>'
                 a_tag.insert_before(BeautifulSoup(iframe, 'html.parser'))
 
     return str(soup)

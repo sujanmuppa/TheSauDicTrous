@@ -8,7 +8,8 @@
   {% if article.link %}
     <a href="{{ article.link }}" target="_blank" class="btn btn-primary mb-3">Read Article</a> <!-- Link to the article -->
   {% endif %}
-  <p><a href="mailto:{{ article.author_email }}">{{ article.author_name }}</a></p> <!-- Author's name and email -->
+  <br>
+  <a href="mailto:{{ article.author_email }}">{{ article.author_name }}</a>
   <div class="mb-4">
     {{ article.story | safe }}  <!-- Render HTML (with embedded media) -->
   </div>
